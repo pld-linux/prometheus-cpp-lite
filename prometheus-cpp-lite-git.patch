@@ -1,0 +1,441 @@
+commit 966dc7092f33259a81b84adc53c88ba89cc801f4
+Author: biaks <ianiskr@gmail.com>
+Date:   Sun Aug 29 17:32:00 2021 +0300
+
+    Add config for github CI
+
+diff --git a/.github/workflows/cmake.yml b/.github/workflows/cmake.yml
+new file mode 100644
+index 0000000..6468158
+--- /dev/null
++++ b/.github/workflows/cmake.yml
+@@ -0,0 +1,30 @@
++name: CMake
++
++on:
++  push:
++    branches: [ master ]
++  pull_request:
++    branches: [ master ]
++
++env:
++  # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
++  BUILD_TYPE: Release
++
++jobs:
++  build:
++    # The CMake configure and build commands are platform agnostic and should work equally well on Windows or Mac.
++    # You can convert this to a matrix build if you need cross-platform coverage.
++    # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
++    runs-on: ubuntu-latest
++
++    steps:
++    - uses: actions/checkout@v2
++
++    - name: Configure CMake
++      # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
++      # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
++      run: cmake -B ${{github.workspace}}/build -DPROMETHEUS_BUILD_EXAMPLES=ON -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
++
++    - name: Build
++      # Build your program with the given configuration
++      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+diff --git a/README.md b/README.md
+index 5aeae60..88b42ce 100644
+--- a/README.md
++++ b/README.md
+@@ -1,5 +1,7 @@
+ # C++ Header-only Prometheus client library
+ 
++[![Build examples](https://github.com/biaks/prometheus-cpp-lite/actions/workflows/cmake.yml/badge.svg)](https://github.com/biaks/prometheus-cpp-lite/actions/workflows/cmake.yml)
++
+ It is a tool for quickly adding metrics (and profiling) functionality to C++ projects.
+ 
+ ## Advantages:
+
+commit 8f252c36e55d8a82cae16df9eeed9ed64199643c
+Author: Biaks <ianiskr@mail.ru>
+Date:   Tue Dec 21 12:47:40 2021 +0300
+
+    Update issue templates
+
+diff --git a/.github/ISSUE_TEMPLATE/bug_report.md b/.github/ISSUE_TEMPLATE/bug_report.md
+new file mode 100644
+index 0000000..dd84ea7
+--- /dev/null
++++ b/.github/ISSUE_TEMPLATE/bug_report.md
+@@ -0,0 +1,38 @@
++---
++name: Bug report
++about: Create a report to help us improve
++title: ''
++labels: ''
++assignees: ''
++
++---
++
++**Describe the bug**
++A clear and concise description of what the bug is.
++
++**To Reproduce**
++Steps to reproduce the behavior:
++1. Go to '...'
++2. Click on '....'
++3. Scroll down to '....'
++4. See error
++
++**Expected behavior**
++A clear and concise description of what you expected to happen.
++
++**Screenshots**
++If applicable, add screenshots to help explain your problem.
++
++**Desktop (please complete the following information):**
++ - OS: [e.g. iOS]
++ - Browser [e.g. chrome, safari]
++ - Version [e.g. 22]
++
++**Smartphone (please complete the following information):**
++ - Device: [e.g. iPhone6]
++ - OS: [e.g. iOS8.1]
++ - Browser [e.g. stock browser, safari]
++ - Version [e.g. 22]
++
++**Additional context**
++Add any other context about the problem here.
+diff --git a/.github/ISSUE_TEMPLATE/custom.md b/.github/ISSUE_TEMPLATE/custom.md
+new file mode 100644
+index 0000000..48d5f81
+--- /dev/null
++++ b/.github/ISSUE_TEMPLATE/custom.md
+@@ -0,0 +1,10 @@
++---
++name: Custom issue template
++about: Describe this issue template's purpose here.
++title: ''
++labels: ''
++assignees: ''
++
++---
++
++
+diff --git a/.github/ISSUE_TEMPLATE/feature_request.md b/.github/ISSUE_TEMPLATE/feature_request.md
+new file mode 100644
+index 0000000..bbcbbe7
+--- /dev/null
++++ b/.github/ISSUE_TEMPLATE/feature_request.md
+@@ -0,0 +1,20 @@
++---
++name: Feature request
++about: Suggest an idea for this project
++title: ''
++labels: ''
++assignees: ''
++
++---
++
++**Is your feature request related to a problem? Please describe.**
++A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]
++
++**Describe the solution you'd like**
++A clear and concise description of what you want to happen.
++
++**Describe alternatives you've considered**
++A clear and concise description of any alternative solutions or features you've considered.
++
++**Additional context**
++Add any other context or screenshots about the feature request here.
+
+#commit 76be2bc7874bedd257c48340666d5c2305ac0912
+#Author: aSemy <897017+aSemy@users.noreply.github.com>
+#Date:   Mon Dec 12 22:10:33 2022 +0100
+#
+#    Update histogram.h
+#
+#diff --git a/core/include/prometheus/histogram.h b/core/include/prometheus/histogram.h
+#index 03cf461..aa6dfc4 100644
+#--- a/core/include/prometheus/histogram.h
+#+++ b/core/include/prometheus/histogram.h
+#@@ -105,7 +105,7 @@ namespace prometheus {
+#         auto cumulative_count = 0ULL;
+#         metric.histogram.bucket.reserve(bucket_counts_.size());
+#         for (std::size_t i{0}; i < bucket_counts_.size(); ++i) {
+#-          cumulative_count += static_cast<std::size_t>(bucket_counts_[i].Value());
+#+          cumulative_count += static_cast<std::size_t>(bucket_counts_[i].Get());
+#           auto bucket = ClientMetric::Bucket{};
+#           bucket.cumulative_count = cumulative_count;
+#           bucket.upper_bound = (i == bucket_boundaries_.size()
+#
+#commit 42e12527db163f5632c50c3641b170673faa6c32
+#Author: aSemy <897017+aSemy@users.noreply.github.com>
+#Date:   Tue Dec 13 00:00:18 2022 +0100
+#
+#    Histogram, inherit from public Metric
+#
+#diff --git a/core/include/prometheus/histogram.h b/core/include/prometheus/histogram.h
+#index 03cf461..7745283 100644
+#--- a/core/include/prometheus/histogram.h
+#+++ b/core/include/prometheus/histogram.h
+#@@ -27,7 +27,7 @@ namespace prometheus {
+#   /// The class is thread-safe. No concurrent call to any API of this type causes
+#   /// a data race.
+#   template <typename Value_ = uint64_t>
+#-  class Histogram : Metric {
+#+  class Histogram : public Metric {
+# 
+#       using BucketBoundaries = std::vector<Value_>;
+# 
+#
+commit bcd99241ef31f30821a61b2ff8edbbe39c391d03
+Author: Sergey Grigoryan <sergeygrigoryan0903@gmail.com>
+Date:   Wed Jan 4 16:04:28 2023 +0400
+
+    Fixed some bugs in Histogram class. Made it to work with templates correctly. Also some general changes.
+
+diff --git a/core/include/prometheus/client_metric.h b/core/include/prometheus/client_metric.h
+index 39acff7..4232c63 100644
+--- a/core/include/prometheus/client_metric.h
++++ b/core/include/prometheus/client_metric.h
+@@ -3,11 +3,11 @@
+ #include <cstdint>
+ #include <string>
+ #include <tuple>
++#include <utility>
+ #include <vector>
+ 
+ namespace prometheus {
+ 
+-  // структура, в которую копируются значения метрик перед их сериализацией
+   struct ClientMetric {
+ 
+     // Label
+@@ -17,7 +17,7 @@ namespace prometheus {
+       std::string name;
+       std::string value;
+ 
+-      Label(const std::string name_, const std::string value_) : name(name_), value(value_) {}
++      Label(std::string name_, std::string value_) : name(std::move(name_)), value(std::move(value_)) {}
+ 
+       bool operator<(const Label& rhs) const {
+         return std::tie(name, value) < std::tie(rhs.name, rhs.value);
+diff --git a/core/include/prometheus/counter.h b/core/include/prometheus/counter.h
+index 3523188..93fbd23 100644
+--- a/core/include/prometheus/counter.h
++++ b/core/include/prometheus/counter.h
+@@ -28,7 +28,7 @@ namespace prometheus {
+   template <typename Value_ = uint64_t>
+   class Counter : public Metric {
+ 
+-    std::atomic<Value_> value{ 0 };
++    std::atomic<Value_> value{};
+ 
+   public:
+ 
+diff --git a/core/include/prometheus/family.h b/core/include/prometheus/family.h
+index 956c7df..1c625c1 100644
+--- a/core/include/prometheus/family.h
++++ b/core/include/prometheus/family.h
+@@ -87,10 +87,10 @@ namespace prometheus {
+       static bool isLocaleIndependentDigit        (char c) { return '0' <= c && c <= '9'; }
+       static bool isLocaleIndependentAlphaNumeric (char c) { return isLocaleIndependentDigit(c) || ('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z'); }
+ 
+-      bool nameStartsValid (const std::string& name) {
+-        if (name.empty())                           return false; // must not be empty
+-        if (isLocaleIndependentDigit(name.front())) return false; // must not start with a digit
+-        if (name.compare(0, 2, "__") == 0)          return false; // must not start with "__"
++      bool nameStartsValid (const std::string& cur_name) {
++        if (cur_name.empty())                           return false; // must not be empty
++        if (isLocaleIndependentDigit(cur_name.front())) return false; // must not start with a digit
++        if (cur_name.compare(0, 2, "__") == 0)          return false; // must not start with "__"
+         return true;
+       }
+ 
+@@ -102,12 +102,12 @@ namespace prometheus {
+       ///
+       /// \param name metric name
+       /// \return true is valid, false otherwise
+-      bool CheckMetricName (const std::string& name) {
++      bool CheckMetricName (const std::string& cur_name) {
+ 
+-        if (!nameStartsValid(name))
++        if (!nameStartsValid(cur_name))
+           return false;
+ 
+-        for (const char& c : name)
++        for (const char& c : cur_name)
+           if ( !isLocaleIndependentAlphaNumeric(c) && c != '_' && c != ':' )
+             return false;
+ 
+@@ -123,12 +123,12 @@ namespace prometheus {
+       ///
+       /// \param name label name
+       /// \return true is valid, false otherwise
+-      bool CheckLabelName (const std::string& name) {
++      bool CheckLabelName (const std::string& cur_name) {
+ 
+-        if (!nameStartsValid(name))
++        if (!nameStartsValid(cur_name))
+           return false;
+ 
+-        for (const char& c : name)
++        for (const char& c : cur_name)
+           if (!isLocaleIndependentAlphaNumeric(c) && c != '_')
+             return false;
+ 
+@@ -198,8 +198,8 @@ namespace prometheus {
+       /// \brief Returns true if the dimensional data with the given labels exist
+       ///
+       /// \param labels A set of key-value pairs (= labels) of the dimensional data.
+-      bool Has (const Labels& labels) const {
+-        const Hash hash = hash_labels (labels);
++      bool Has (const Labels& cur_labels) const {
++        const Hash hash = hash_labels (cur_labels);
+         std::lock_guard<std::mutex> lock{ mutex };
+         return metrics.find(hash) != metrics.end();
+       }
+@@ -262,8 +262,9 @@ namespace prometheus {
+ 
+       static const Metric::Type static_type = CustomMetric::static_type;
+ 
+-      CustomFamily(const std::string& name, const std::string& help, const Family::Labels& constant_labels)
+-        : Family(static_type, name, help, constant_labels) {}
++      CustomFamily(const std::string& name_, const std::string& help_,
++                   const Family::Labels& constant_labels_)
++        : Family(static_type, name_, help_, constant_labels_) {}
+ 
+       /// \brief Add a new dimensional data.
+       ///
+diff --git a/core/include/prometheus/histogram.h b/core/include/prometheus/histogram.h
+index 03cf461..40aa4f3 100644
+--- a/core/include/prometheus/histogram.h
++++ b/core/include/prometheus/histogram.h
+@@ -7,6 +7,7 @@
+ #include "prometheus/metric.h"
+ #include "prometheus/family.h"
+ #include "prometheus/counter.h"
++#include "prometheus/gauge.h"
+ 
+ namespace prometheus {
+ 
+@@ -27,16 +28,10 @@ namespace prometheus {
+   /// The class is thread-safe. No concurrent call to any API of this type causes
+   /// a data race.
+   template <typename Value_ = uint64_t>
+-  class Histogram : Metric {
+-
+-      using BucketBoundaries = std::vector<Value_>;
+-
+-      const BucketBoundaries       bucket_boundaries_;
+-      std::vector<Counter<Value_>> bucket_counts_;
+-      Gauge<Value_>                sum_;
+-
++  class Histogram : public Metric {
+     public:
+       using Value  = Value_;
++      using BucketBoundaries = std::vector<Value>;
+       using Family = CustomFamily<Histogram<Value>>;
+ 
+       static const Metric::Type static_type = Metric::Type::Histogram;
+@@ -69,7 +64,7 @@ namespace prometheus {
+           bucket_boundaries_.begin(),
+           std::find_if(
+             std::begin(bucket_boundaries_), std::end(bucket_boundaries_),
+-            [value](const double boundary) { return boundary >= value; })));
++            [value](const Value boundary) { return boundary >= value; })));
+         sum_.Increment(value);
+         bucket_counts_[bucket_index].Increment();
+       }
+@@ -105,20 +100,24 @@ namespace prometheus {
+         auto cumulative_count = 0ULL;
+         metric.histogram.bucket.reserve(bucket_counts_.size());
+         for (std::size_t i{0}; i < bucket_counts_.size(); ++i) {
+-          cumulative_count += static_cast<std::size_t>(bucket_counts_[i].Value());
++          cumulative_count += static_cast<std::size_t>(bucket_counts_[i].Get());
+           auto bucket = ClientMetric::Bucket{};
+           bucket.cumulative_count = cumulative_count;
+-          bucket.upper_bound = (i == bucket_boundaries_.size()
+-                                    ? std::numeric_limits<double>::infinity()
+-                                    : bucket_boundaries_[i]);
++          bucket.upper_bound = static_cast<double>((i == bucket_boundaries_.size()
++                                                    ? std::numeric_limits<Value>::infinity()
++                                                    : bucket_boundaries_[i]));
+           metric.histogram.bucket.push_back(std::move(bucket));
+         }
+         metric.histogram.sample_count = cumulative_count;
+-        metric.histogram.sample_sum = sum_.Get();
++        metric.histogram.sample_sum = static_cast<double>(sum_.Get());
+ 
+         return metric;
+       }
+ 
++     private:
++      const BucketBoundaries       bucket_boundaries_;
++      std::vector<Counter<Value_>> bucket_counts_;
++      Gauge<Value_>                sum_;
+   };
+ 
+   /// \brief Return a builder to configure and register a Histogram metric.
+@@ -151,4 +150,5 @@ namespace prometheus {
+   using BuildHistogram = Builder<Histogram<double>>;
+ 
+ 
++
+ }  // namespace prometheus
+
+commit 3f4adb40450db196f716cbca5583120378f4a4a7
+Author: Sergey Grigoryan <sergeygrigoryan0903@gmail.com>
+Date:   Fri Jan 6 14:49:30 2023 +0400
+
+    Fixed bug that std::numeric_limits<T>::infinity was incorrectly casted to double.
+
+diff --git a/core/include/prometheus/histogram.h b/core/include/prometheus/histogram.h
+index 40aa4f3..72a5b5b 100644
+--- a/core/include/prometheus/histogram.h
++++ b/core/include/prometheus/histogram.h
+@@ -103,9 +103,9 @@ namespace prometheus {
+           cumulative_count += static_cast<std::size_t>(bucket_counts_[i].Get());
+           auto bucket = ClientMetric::Bucket{};
+           bucket.cumulative_count = cumulative_count;
+-          bucket.upper_bound = static_cast<double>((i == bucket_boundaries_.size()
+-                                                    ? std::numeric_limits<Value>::infinity()
+-                                                    : bucket_boundaries_[i]));
++          bucket.upper_bound = i == bucket_boundaries_.size()
++                               ? std::numeric_limits<double>::infinity()
++                               : static_cast<double>(bucket_boundaries_[i]);
+           metric.histogram.bucket.push_back(std::move(bucket));
+         }
+         metric.histogram.sample_count = cumulative_count;
+
+commit e0afbf7f11bd486467ab2f655eb863f136d69fc5
+Merge: 8f252c3 76be2bc
+Author: Biaks <ianiskr@gmail.com>
+Date:   Sun Aug 13 22:23:48 2023 +0300
+
+    Merge pull request #17 from aSemy/fix/histogram-collect
+    
+    Update histogram.h - use `Counter.Get()`
+
+commit 92c9449d66544de47f6f687812ac2d1d07df7ebf
+Merge: e0afbf7 42e1252
+Author: Biaks <ianiskr@gmail.com>
+Date:   Sun Aug 13 22:24:10 2023 +0300
+
+    Merge pull request #18 from aSemy/patch-1
+    
+    Histogram, inherit from public Metric
+
+commit cac781b022aa96e5d9b3d50f1424bb11c60eb50e
+Merge: 3f4adb4 92c9449
+Author: Biaks <ianiskr@gmail.com>
+Date:   Sun Aug 13 22:26:37 2023 +0300
+
+    Merge branch 'master' into some_useful_changes
+
+commit 48d09c45ee6deb90e02579b03037740e1c01fd27
+Merge: 92c9449 cac781b
+Author: Biaks <ianiskr@gmail.com>
+Date:   Sun Aug 13 22:30:00 2023 +0300
+
+    Merge pull request #19 from grigoryan-sergey/some_useful_changes
+    
+    Fixed some bugs in Histogram class. Made it to work with templates correctly.
