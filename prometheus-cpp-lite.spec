@@ -10,12 +10,15 @@ Source0:	https://github.com/biaks/prometheus-cpp-lite/archive/v%{version}/%{name
 # Source0-md5:	284064732a693846673b1852e75ae2cc
 # git log -p --reverse v1.0..master
 Patch0:		%{name}-git.patch
+Patch1:		%{name}-includes.patch
 URL:		https://github.com/biaks/prometheus-cpp-lite
 BuildRequires:	cmake >= 3.2
 BuildRequires:	libstdc++-devel >= 6:4.7
 BuildRequires:	rpm-build >= 4.6
 BuildRequires:	rpmbuild(macros) >= 1.605
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
+
+%define		_enable_debug_packages	0
 
 %description
 It is a tool for quickly adding metrics (and profiling) functionality
@@ -111,6 +114,7 @@ Biblioteka Simple API klienta Prometheusa.
 %prep
 %setup -q
 %patch -P0 -p1
+%patch -P1 -p1
 
 %build
 install -d build

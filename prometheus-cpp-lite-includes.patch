@@ -1,0 +1,20 @@
+--- prometheus-cpp-lite-1.0/core/include/prometheus/family.h.orig	2025-06-18 19:00:46.835329607 +0200
++++ prometheus-cpp-lite-1.0/core/include/prometheus/family.h	2025-06-18 19:02:00.849097395 +0200
+@@ -4,6 +4,7 @@
+ #include <map>
+ #include <memory>
+ #include <mutex>
++#include <stdexcept>
+ #include <string>
+ #include <unordered_map>
+ #include <vector>
+--- prometheus-cpp-lite-1.0/core/include/prometheus/registry.h.orig	2021-08-29 15:04:00.000000000 +0200
++++ prometheus-cpp-lite-1.0/core/include/prometheus/registry.h	2025-06-18 19:02:17.605862429 +0200
+@@ -3,6 +3,7 @@
+ #include <map>
+ #include <memory>
+ #include <mutex>
++#include <stdexcept>
+ #include <string>
+ #include <vector>
+ 
